@@ -20,9 +20,11 @@ namespace SharpCompress.Writers.GZip
             if (writerOptions != null)
             {
                 CompressionLevel = writerOptions.CompressionLevel;
+                WindowBits = writerOptions.WindowBits;
             }
         }
         
         public CompressionLevel CompressionLevel { get; set; } = CompressionLevel.Default;
+        public int WindowBits { get; set; } = ZlibConstants.WindowBitsDefault;
     }
 }

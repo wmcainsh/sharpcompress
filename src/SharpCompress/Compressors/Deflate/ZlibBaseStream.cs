@@ -43,6 +43,9 @@ namespace SharpCompress.Compressors.Deflate
 
     internal class ZlibBaseStream : Stream
     {
+        private readonly Encoding _encoding;
+        private readonly int _windowBits;
+
         protected internal ZlibCodec _z; // deferred init... new ZlibCodec();
 
         protected internal StreamMode _streamMode = StreamMode.Undefined;
@@ -64,7 +67,6 @@ namespace SharpCompress.Compressors.Deflate
         protected internal DateTime _GzipMtime;
         protected internal int _gzipHeaderByteCount;
 
-        private readonly Encoding _encoding;
 
         internal int Crc32
         {
@@ -83,16 +85,25 @@ namespace SharpCompress.Compressors.Deflate
                               CompressionLevel level,
                               ZlibStreamFlavor flavor,
                               Encoding encoding)
+            : this(stream, compressionMode, level, flavor, encoding, ZlibConstants.WindowBitsDefault)
+        { }
+
+        public ZlibBaseStream(Stream stream,
+                              CompressionMode compressionMode,
+                              CompressionLevel level,
+                              ZlibStreamFlavor flavor,
+                              Encoding encoding,
+                              int windowBits)
         {
+            _compressionMode = compressionMode;
+            _encoding = encoding;
+            _flavor = flavor;
             _flushMode = FlushType.None;
+            _level = level;
+            _stream = stream;
+            _windowBits = windowBits;
 
             //this._workingBuffer = new byte[WORKING_BUFFER_SIZE_DEFAULT];
-            _stream = stream;
-            _compressionMode = compressionMode;
-            _flavor = flavor;
-            _level = level;
-
-            _encoding = encoding;
 
             // workitem 7159
             if (flavor == ZlibStreamFlavor.GZIP)
@@ -113,12 +124,12 @@ namespace SharpCompress.Compressors.Deflate
                     _z = new ZlibCodec();
                     if (_compressionMode == CompressionMode.Decompress)
                     {
-                        _z.InitializeInflate(wantRfc1950Header);
+                        _z.InitializeInflate(_windowBits, wantRfc1950Header);
                     }
                     else
                     {
                         _z.Strategy = Strategy;
-                        _z.InitializeDeflate(_level, wantRfc1950Header);
+                        _z.InitializeDeflate(_level, _windowBits, wantRfc1950Header);
                     }
                 }
                 return _z;

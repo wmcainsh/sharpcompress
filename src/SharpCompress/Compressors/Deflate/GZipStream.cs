@@ -51,18 +51,20 @@ namespace SharpCompress.Compressors.Deflate
         private readonly Encoding _encoding;
 
         public GZipStream(Stream stream, CompressionMode mode)
-            : this(stream, mode, CompressionLevel.Default, Encoding.UTF8)
-        {
-        }
+            : this(stream, mode, CompressionLevel.Default, Encoding.UTF8, ZlibConstants.WindowBitsDefault)
+        { }
 
         public GZipStream(Stream stream, CompressionMode mode, CompressionLevel level)
-            : this(stream, mode, level, Encoding.UTF8)
-        {
-        }
+            : this(stream, mode, level, Encoding.UTF8, ZlibConstants.WindowBitsDefault)
+        { }
 
         public GZipStream(Stream stream, CompressionMode mode, CompressionLevel level, Encoding encoding)
+            : this(stream, mode, level, Encoding.UTF8, ZlibConstants.WindowBitsDefault)
+        { }
+
+        public GZipStream(Stream stream, CompressionMode mode, CompressionLevel level, Encoding encoding, int windowBits)
         {
-            BaseStream = new ZlibBaseStream(stream, mode, level, ZlibStreamFlavor.GZIP, encoding);
+            BaseStream = new ZlibBaseStream(stream, mode, level, ZlibStreamFlavor.GZIP, encoding, windowBits);
             _encoding = encoding;
         }
 

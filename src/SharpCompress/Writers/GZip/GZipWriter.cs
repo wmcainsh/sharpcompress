@@ -20,7 +20,8 @@ namespace SharpCompress.Writers.GZip
             }
             InitalizeStream(new GZipStream(destination, CompressionMode.Compress, 
                                            options?.CompressionLevel ?? CompressionLevel.Default,
-                                           WriterOptions.ArchiveEncoding.GetEncoding()));
+                                           WriterOptions.ArchiveEncoding.GetEncoding(),
+                                           options?.WindowBits ?? ZlibConstants.WindowBitsDefault));
         }
 
         protected override void Dispose(bool isDisposing)
